@@ -12,62 +12,72 @@ import (
 
 func resourceMetalVolume() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceMetalVolumeCreate,
-		Read:   resourceMetalVolumeRead,
-		Update: resourceMetalVolumeUpdate,
-		Delete: resourceMetalVolumeDelete,
+		Description: resourceDescriptions["volume"],
+		Create:      resourceMetalVolumeCreate,
+		Read:        resourceMetalVolumeRead,
+		Update:      resourceMetalVolumeUpdate,
+		Delete:      resourceMetalVolumeDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"project_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: schemaDescriptions["project_id"],
 			},
 
 			"name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The generated name of the volume",
 			},
 
 			"description": {
-				Type:     schema.TypeString,
-				Required: false,
-				Optional: true,
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Description: "Optional description for the volume",
 			},
 
 			"size": {
-				Type:     schema.TypeInt,
-				Required: true,
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "Volume size in GB. Must be at elast 100",
 			},
 
 			"facility": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: schemaDescriptions["facility"],
 			},
 
 			"plan": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Plan/Performance tier",
 			},
 
 			"billing_cycle": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: schemaDescriptions["billing_cycle"],
 			},
 
 			"state": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: schemaDescriptions["state"],
 			},
 
 			"locked": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: schemaDescriptions["locked"],
 			},
 
 			"snapshot_policies": {
@@ -76,17 +86,20 @@ func resourceMetalVolume() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"snapshot_frequency": {
-							Type:     schema.TypeString,
-							Required: true,
-							ForceNew: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							ForceNew:    true,
+							Description: "How often to make snapshots, e.g \"1day\"",
 						},
 						"snapshot_count": {
-							Type:     schema.TypeInt,
-							Required: true,
-							ForceNew: true,
+							Type:        schema.TypeInt,
+							Required:    true,
+							ForceNew:    true,
+							Description: "Number of snapshots to keep",
 						},
 					},
 				},
+				Description: "List of policies for volume snapshots",
 			},
 
 			"attachments": {
@@ -100,16 +113,19 @@ func resourceMetalVolume() *schema.Resource {
 						},
 					},
 				},
+				Description: "List of IDs of device-volume attachment API resources linked to this volume",
 			},
 
 			"created": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Creation timestamp",
 			},
 
 			"updated": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Update timestamp",
 			},
 		},
 	}

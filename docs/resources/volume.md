@@ -1,22 +1,22 @@
 ---
-page_title: "Equinix Metal: metal_volume"
+page_title: "metal_volume Resource - terraform-provider-metal"
 subcategory: ""
 description: |-
-  Provides an Equinix Metal Block Storage Volume Resource.
+  Provides an Equinix Metal Block Storage Volume resource to allow you to manage block volumes on your account.  Once created by Terraform, they must then be attached and mounted using the api and metal_block_attach and metal_block_detach scripts.
 ---
 
-# metal\_volume
+# Resource `metal_volume`
 
-Provides an Equinix Metal Block Storage Volume resource to allow you to
-manage block volumes on your account.
-Once created by Terraform, they must then be attached and mounted
-using the api and `metal_block_attach` and `metal_block_detach`
-scripts.
+Provides an Equinix Metal Block Storage Volume resource to allow you to manage block volumes on your account.  Once created by Terraform, they must then be attached and mounted using the api and `metal_block_attach` and `metal_block_detach` scripts.
 
 ## Example Usage
 
-```hcl
-# Create a new block volume
+```terraform
+locals {
+    project_id = "552345b2-ee46-4673-93a8-de2c2bdba33b"
+}
+
+
 resource "metal_volume" "volume1" {
   description   = "terraform-volume-1"
   facility      = "ewr1"
@@ -37,33 +37,52 @@ resource "metal_volume" "volume1" {
 }
 ```
 
-## Argument Reference
+## Schema
 
-The following arguments are supported:
+### Required
 
-* `plan` - (Required) The service plan slug of the volume
-* `facility` - (Required) The facility to create the volume in
-* `project_id` - (Required) The metal project ID to deploy the volume in
-* `size` - (Required) The size in GB to make the volume
-* `billing_cycle` - The billing cycle, defaults to "hourly"
-* `description` - Optional description for the volume
-* `snapshot_policies` - Optional list of snapshot policies
-* `locked` - Lock or unlock the volume
+- **facility** (String) The facility in which the resource should be created
+- **plan** (String) Plan/Performance tier
+- **project_id** (String) ID of metap project in which the resource should be created
+- **size** (Number) Volume size in GB. Must be at elast 100
 
-## Attributes Reference
+### Optional
 
-The following attributes are exported:
+- **billing_cycle** (String) hourly (default) or monthly
+- **description** (String) Optional description for the volume
+- **id** (String) The ID of this resource.
+- **locked** (Boolean) Setting this parameter will prevent resource deletion
+- **snapshot_policies** (Block List) List of policies for volume snapshots (see [below for nested schema](#nestedblock--snapshot_policies))
 
-* `id` - The unique ID of the volume
-* `name` - The name of the volume
-* `description` - The description of the volume
-* `size` - The size in GB of the volume
-* `plan` - Performance plan the volume is on
-* `billing_cycle` - The billing cycle, defaults to hourly
-* `facility` - The facility slug the volume resides in
-* `state` - The state of the volume
-* `locked` - Whether the volume is locked or not
-* `project_id` - The project id the volume is in
-* `attachments` - A list of attachments, each with it's own `href` attribute
-* `created` - The timestamp for when the volume was created
-* `updated` - The timestamp for the last time the volume was updated
+### Read-only
+
+- **attachments** (List of Object) List of IDs of device-volume attachment API resources linked to this volume (see [below for nested schema](#nestedatt--attachments))
+- **created** (String) Creation timestamp
+- **name** (String) The generated name of the volume
+- **state** (String) Provisioning state of the resource
+- **updated** (String) Update timestamp
+
+<a id="nestedblock--snapshot_policies"></a>
+### Nested Schema for `snapshot_policies`
+
+Required:
+
+- **snapshot_count** (Number) Number of snapshots to keep
+- **snapshot_frequency** (String) How often to make snapshots, e.g "1day"
+
+
+<a id="nestedatt--attachments"></a>
+### Nested Schema for `attachments`
+
+Read-only:
+
+- **href** (String)
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# import existing volume
+terraform import metal_volume.test 07af1eec-091e-4ddd-a4ed-9b85928d4c36
+```

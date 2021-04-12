@@ -60,14 +60,14 @@ func dataSourceMetalVirtualCircuitRead(d *schema.ResourceData, meta interface{})
 		return err
 	}
 
-	d.Set("virtual_circuit_id", vc.ID)
-	d.Set("name", vc.Name)
-	d.Set("status", vc.Status)
-	d.Set("vnid", vc.VNID)
-	d.Set("nni_vnid", vc.NniVNID)
-	d.Set("nni_vlan", vc.NniVLAN)
-	d.Set("project_id", vc.Project.ID)
 	d.SetId(vc.ID)
-
-	return nil
+	return setMap(d, map[string]interface{}{
+		"virtual_circuit_id": vc.ID,
+		"name":               vc.Name,
+		"status":             vc.Status,
+		"vnid":               vc.VNID,
+		"nni_vnid":           vc.NniVNID,
+		"nni_vlan":           vc.NniVLAN,
+		"project_id":         vc.Project.ID,
+	})
 }

@@ -1,0 +1,11 @@
+on: [pull_request]
+
+jobs:
+  tfproviderlint:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.0.0
+    - uses: bflad/tfproviderlint-github-action@master
+      with:
+        args: ./...

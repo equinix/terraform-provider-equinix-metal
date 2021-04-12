@@ -60,8 +60,13 @@ func getAndPossiblySetNetworkType(d *schema.ResourceData, c *packngo.Client, tar
 	}
 
 	if devType != targetType {
-		_, err := c.DevicePorts.DeviceToNetworkType(devID, targetType)
+		device, _, err := c.Devices.Get(devID, nil)
 		if err != nil {
+			return err
+		}
+
+		//nolint:deprecated
+		if err := c.DevicePorts.ConvertDevice(device, targetType); err != nil {
 			return err
 		}
 	}
@@ -104,9 +109,7 @@ func resourceMetalDeviceNetworkTypeRead(d *schema.ResourceData, meta interface{}
 		devNType = "hybrid-bonded"
 	}
 
-	d.Set("type", devNType)
-
-	return nil
+	return d.Set("type", devNType)
 }
 
 func resourceMetalDeviceNetworkTypeUpdate(d *schema.ResourceData, meta interface{}) error {

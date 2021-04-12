@@ -101,18 +101,21 @@ func resourceMetalSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 	ownerID := path.Base(key.Owner.Href)
 
 	d.SetId(key.ID)
-	d.Set("name", key.Label)
-	d.Set("public_key", key.Key)
-	d.Set("fingerprint", key.FingerPrint)
-	d.Set("owner_id", ownerID)
-	d.Set("created", key.Created)
-	d.Set("updated", key.Updated)
 
-	if strings.Contains(key.Owner.Href, "/projects/") {
-		d.Set("project_id", ownerID)
-	}
-
-	return nil
+	return setMap(d, map[string]interface{}{
+		"name":        key.Label,
+		"public_key":  key.Key,
+		"fingerprint": key.FingerPrint,
+		"owner_id":    ownerID,
+		"created":     key.Created,
+		"updated":     key.Updated,
+		"project_id": func(d *schema.ResourceData, k string) error {
+			if strings.Contains(key.Owner.Href, "/projects/") {
+				return d.Set("project_id", ownerID)
+			}
+			return nil
+		},
+	})
 }
 
 func resourceMetalSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {

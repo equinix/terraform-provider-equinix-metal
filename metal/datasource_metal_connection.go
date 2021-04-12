@@ -135,23 +135,24 @@ func dataSourceMetalConnectionRead(d *schema.ResourceData, meta interface{}) err
 
 	conn, _, err := client.Connections.Get(
 		connId,
-		&packngo.GetOptions{Includes: []string{"organization","facility"}})
+		&packngo.GetOptions{Includes: []string{"organization", "facility"}})
 	if err != nil {
 		return err
 	}
 
-	d.Set("connection_id", conn.ID)
-	d.Set("organization_id", conn.Organization.ID)
-	d.Set("name", conn.Name)
-	d.Set("description", conn.Description)
-	d.Set("status", conn.Status)
-	d.Set("redundancy", conn.Redundancy)
-	d.Set("facility", conn.Facility.Code)
-	d.Set("token", conn.Token)
-	d.Set("type", conn.Type)
-	d.Set("speed", conn.Speed)
-	d.Set("ports", getConnectionPorts(conn.Ports))
 	d.SetId(conn.ID)
 
-	return nil
+	return setMap(d, map[string]interface{}{
+		"connection_id":   conn.ID,
+		"organization_id": conn.Organization.ID,
+		"name":            conn.Name,
+		"description":     conn.Description,
+		"status":          conn.Status,
+		"redundancy":      conn.Redundancy,
+		"facility":        conn.Facility.Code,
+		"token":           conn.Token,
+		"type":            conn.Type,
+		"speed":           conn.Speed,
+		"ports":           getConnectionPorts(conn.Ports),
+	})
 }

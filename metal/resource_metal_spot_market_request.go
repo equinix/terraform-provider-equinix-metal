@@ -294,9 +294,8 @@ func resourceMetalSpotMarketRequestRead(d *schema.ResourceData, meta interface{}
 			facilityIDs[i] = f.ID
 		}
 	}
-	d.Set("project_id", smr.Project.ID)
 
-	return nil
+	return d.Set("project_id", smr.Project.ID)
 }
 
 func resourceMetalSpotMarketRequestDelete(d *schema.ResourceData, meta interface{}) error {

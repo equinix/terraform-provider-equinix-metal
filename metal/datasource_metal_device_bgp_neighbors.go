@@ -96,9 +96,9 @@ func dataSourceMetalDeviceBGPNeighborsRead(d *schema.ResourceData, meta interfac
 		return err
 	}
 
-	d.Set("bgp_neighbors", getBgpNeighbors(bgpNeighborsRaw))
 	d.SetId(deviceID)
-	return nil
+	return d.Set("bgp_neighbors", getBgpNeighbors(bgpNeighborsRaw))
+
 }
 
 func getRoutesSlice(routes []packngo.BGPRoute) []map[string]interface{} {

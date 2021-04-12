@@ -192,7 +192,9 @@ func resourceMetalReservedIPBlockCreate(d *schema.ResourceData, meta interface{}
 		return fmt.Errorf("Error reserving IP address block: %s", err)
 	}
 
-	d.Set("project_id", projectID)
+	if err := d.Set("project_id", projectID); err != nil {
+		return err
+	}
 	d.SetId(blockAddr.ID)
 
 	return resourceMetalReservedIPBlockRead(d, meta)
@@ -292,12 +294,15 @@ func resourceMetalReservedIPBlockRead(d *schema.ResourceData, meta interface{}) 
 		return err
 	}
 
-	if (reservedBlock.Description != nil) && (*(reservedBlock.Description) != "") {
-		d.Set("description", *(reservedBlock.Description))
-	}
-	d.Set("global", getGlobalBool(reservedBlock))
-
-	return nil
+	return setMap(d, map[string]interface{}{
+		"global": getGlobalBool(reservedBlock),
+		"description": func(d *schema.ResourceData, k string) error {
+			if (reservedBlock.Description != nil) && (*(reservedBlock.Description) != "") {
+				return d.Set(k, *(reservedBlock.Description))
+			}
+			return nil
+		},
+	})
 }
 
 func resourceMetalReservedIPBlockDelete(d *schema.ResourceData, meta interface{}) error {

@@ -490,6 +490,7 @@ resource "metal_device" "test" {
 `, projSuffix, rInt, rInt, rInt)
 }
 
+/*
 func testAccCheckMetalDeviceConfig_varname_pxe(rInt int, projSuffix string) string {
 	return fmt.Sprintf(`
 resource "metal_project" "test" {
@@ -510,6 +511,7 @@ resource "metal_device" "test" {
 }
 `, projSuffix, rInt, rInt, rInt)
 }
+*/
 
 func testAccCheckMetalDeviceConfig_metro(projSuffix string) string {
 	return fmt.Sprintf(`

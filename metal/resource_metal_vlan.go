@@ -114,12 +114,14 @@ func resourceMetalVlanRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 
 	}
-	d.Set("description", vlan.Description)
-	d.Set("project_id", vlan.Project.ID)
-	d.Set("vxlan", vlan.VXLAN)
-	d.Set("facility", vlan.FacilityCode)
-	d.Set("metro", vlan.MetroCode)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"description": vlan.Description,
+		"project_id":  vlan.Project.ID,
+		"vxlan":       vlan.VXLAN,
+		"facility":    vlan.FacilityCode,
+		"metro":       vlan.MetroCode,
+	})
 }
 
 func resourceMetalVlanDelete(d *schema.ResourceData, meta interface{}) error {

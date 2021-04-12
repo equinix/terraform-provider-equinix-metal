@@ -108,7 +108,7 @@ func resourceMetalPortVlanAttachmentCreate(d *schema.ResourceData, meta interfac
 			}
 		}
 		if len(vlanID) == 0 {
-			return fmt.Errorf("VLAN with VNID %d doesn't exist in facilty %s", vlanVNID, facility)
+			return fmt.Errorf("VLAN with VNID %d doesn't exist in facility %s", vlanVNID, facility)
 		}
 
 		par.VirtualNetworkID = vlanID
@@ -119,7 +119,7 @@ func resourceMetalPortVlanAttachmentCreate(d *schema.ResourceData, meta interfac
 		metalMutexKV.Lock(lockId)
 		defer metalMutexKV.Unlock(lockId)
 
-		_, _, err = client.DevicePorts.Assign(par)
+		_, _, err = client.Ports.Assign(par.PortID, par.VirtualNetworkID)
 		if err != nil {
 			return err
 		}
@@ -129,7 +129,7 @@ func resourceMetalPortVlanAttachmentCreate(d *schema.ResourceData, meta interfac
 
 	native := d.Get("native").(bool)
 	if native {
-		_, _, err = client.DevicePorts.AssignNative(par)
+		_, _, err = client.Ports.AssignNative(par.PortID, par.VirtualNetworkID)
 		if err != nil {
 			return err
 		}
@@ -185,10 +185,12 @@ func resourceMetalPortVlanAttachmentRead(d *schema.ResourceData, meta interface{
 	if !vlanFound {
 		d.SetId("")
 	}
-	d.Set("port_id", portID)
-	d.Set("vlan_id", vlanID)
-	d.Set("native", vlanNative)
-	return nil
+
+	return setMap(d, map[string]interface{}{
+		"port_id": portID,
+		"vlan_id": vlanID,
+		"native":  vlanNative,
+	})
 }
 
 func resourceMetalPortVlanAttachmentUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -199,12 +201,12 @@ func resourceMetalPortVlanAttachmentUpdate(d *schema.ResourceData, meta interfac
 		if native {
 			vlanID := d.Get("vlan_id").(string)
 			par := &packngo.PortAssignRequest{PortID: portID, VirtualNetworkID: vlanID}
-			_, _, err := client.DevicePorts.AssignNative(par)
+			_, _, err := client.Ports.AssignNative(par.PortID, par.VirtualNetworkID)
 			if err != nil {
 				return err
 			}
 		} else {
-			_, _, err := client.DevicePorts.UnassignNative(portID)
+			_, _, err := client.Ports.UnassignNative(portID)
 			if err != nil {
 				return err
 			}
@@ -219,7 +221,7 @@ func resourceMetalPortVlanAttachmentDelete(d *schema.ResourceData, meta interfac
 	vlanID := d.Get("vlan_id").(string)
 	native := d.Get("native").(bool)
 	if native {
-		_, resp, err := client.DevicePorts.UnassignNative(pID)
+		_, resp, err := client.Ports.UnassignNative(pID)
 		if ignoreResponseErrors(httpForbidden, httpNotFound)(resp, err) != nil {
 			return err
 		}
@@ -228,7 +230,7 @@ func resourceMetalPortVlanAttachmentDelete(d *schema.ResourceData, meta interfac
 	lockId := "vlan-detachment-" + pID
 	metalMutexKV.Lock(lockId)
 	defer metalMutexKV.Unlock(lockId)
-	portPtr, resp, err := client.DevicePorts.Unassign(par)
+	portPtr, resp, err := client.Ports.Unassign(par.PortID, par.VirtualNetworkID)
 	if ignoreResponseErrors(httpForbidden, httpNotFound, isNotAssigned)(resp, err) != nil {
 		return err
 	}
@@ -236,11 +238,15 @@ func resourceMetalPortVlanAttachmentDelete(d *schema.ResourceData, meta interfac
 	if forceBond && (len(portPtr.AttachedVirtualNetworks) == 0) {
 		deviceID := d.Get("device_id").(string)
 		portName := d.Get("port_name").(string)
-		port, err := client.DevicePorts.GetPortByName(deviceID, portName)
+		device, _, err := client.Devices.Get(deviceID, nil)
 		if err != nil {
 			return friendlyError(err)
 		}
-		_, _, err = client.DevicePorts.Bond(port, false)
+		port, err := device.GetPortByName(portName)
+		if err != nil {
+			return friendlyError(err)
+		}
+		_, _, err = client.Ports.Bond(port.ID, false)
 		if err != nil {
 			return friendlyError(err)
 		}

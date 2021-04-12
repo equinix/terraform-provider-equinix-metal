@@ -40,11 +40,10 @@ func resourceMetalVolumeAttachmentCreate(d *schema.ResourceData, meta interface{
 	log.Printf("[DEBUG] Attaching Volume (%s) to Instance (%s)\n", vID, dID)
 	va, _, err := client.VolumeAttachments.Create(vID, dID)
 	if err != nil {
-		switch err.(type) {
+		switch err := err.(type) {
 		case *packngo.ErrorResponse:
-			e := err.(*packngo.ErrorResponse)
-			if len(e.Errors) == 1 {
-				if e.Errors[0] == "Instance is already attached to this volume" {
+			if len(err.Errors) == 1 {
+				if err.Errors[0] == "Instance is already attached to this volume" {
 					log.Printf("[DEBUG] Volume (%s) is already attached to Instance (%s)", vID, dID)
 					break
 				}
@@ -69,9 +68,10 @@ func resourceMetalVolumeAttachmentRead(d *schema.ResourceData, meta interface{})
 		}
 		return err
 	}
-	d.Set("device_id", path.Base(va.Device.Href))
-	d.Set("volume_id", path.Base(va.Volume.Href))
-	return nil
+	return setMap(d, map[string]interface{}{
+		"device_id": path.Base(va.Device.Href),
+		"volume_id": path.Base(va.Volume.Href),
+	})
 }
 
 func resourceMetalVolumeAttachmentDelete(d *schema.ResourceData, meta interface{}) error {

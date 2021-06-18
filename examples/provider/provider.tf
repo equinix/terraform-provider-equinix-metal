@@ -1,20 +1,3 @@
----
-layout: ""
-page_title: "Provider: Equinix Metal"
-description: |-
-  The Equinix Metal provider is used to interact with the Equinix Metal Host API.
----
-
-# Equinix Metal Provider
-
-[Packet is now Equinix Metal!](https://blog.equinix.com/blog/2020/10/06/equinix-metal-metal-and-more/)
-
-The Equinix Metal (`metal`) provider is used to interact with the resources supported by [Equinix Metal](https://metal.equinix.com/).
-The provider needs to be configured with the proper credentials before it can be used.
-
-## Example Usage
-
-```terraform
 terraform {
   required_providers {
     metal = {
@@ -56,14 +39,3 @@ resource "metal_device" "web1" {
   # https://console.equinix.com/projects/352000fb2-ee46-4673-93a8-de2c2bdba33b
   # .. then 352000fb2-ee46-4673-93a8-de2c2bdba33b is your project ID.
 }
-```
-
-Instead of configuring the auth token in the provider block, you can just export it in `METAL_AUTH_TOKEN` environment variable.
-
-## Schema
-
-### Optional
-
-- **auth_token** (String) The API auth key for API operations.
-- **max_retries** (Number)
-- **max_retry_wait_seconds** (Number)

@@ -23,30 +23,12 @@ If you only want to change the `metal_device` resource specfication from facilit
 
 For example, given following configuration of a device deployed in the `sv15` facility:
 
-```terraform
-resource "metal_device" "node" {
-  project_id       = local.project_id
-  facilities       = ["sv15"]
-  plan             = "c3.small.x86"
-  operating_system = "ubuntu_16_04"
-  hostname         = "test"
-  billing_cycle    = "hourly"
-}
-```
+{{ tffile "examples/guides/migration_facilities_to_metros_devices_1.tf" }}
 
 .. you can remove `faclities` and add `metro`, changing the configuration to:
 
 
-```terraform
-resource "metal_device" "node" {
-  project_id       = local.project_id
-  metro            = "sv"
-  plan             = "c3.small.x86"
-  operating_system = "ubuntu_16_04"
-  hostname         = "test"
-  billing_cycle    = "hourly"
-}
-```
+{{ tffile "examples/guides/migration_facilities_to_metros_devices_2.tf" }}
 
 To test that the change didn't taint the state, and that the device will not be re-created, you can check if `terraform plan` reports any differences. The terraform state should be up to date as long as the facility in which the device was deployed was contained within the metro.
 

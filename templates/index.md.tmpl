@@ -1,0 +1,21 @@
+---
+layout: ""
+page_title: "Provider: Equinix Metal"
+description: |-
+  The Equinix Metal provider is used to interact with the Equinix Metal Host API.
+---
+
+# Equinix Metal Provider
+
+[Packet is now Equinix Metal!](https://blog.equinix.com/blog/2020/10/06/equinix-metal-metal-and-more/)
+
+The Equinix Metal (`metal`) provider is used to interact with the resources supported by [Equinix Metal](https://metal.equinix.com/).
+The provider needs to be configured with the proper credentials before it can be used.
+
+## Example Usage
+
+{{tffile "examples/provider/provider.tf"}}
+
+Instead of configuring the auth token in the provider block, you can just export it in `METAL_AUTH_TOKEN` environment variable.
+
+{{ .SchemaMarkdown | trimspace }}

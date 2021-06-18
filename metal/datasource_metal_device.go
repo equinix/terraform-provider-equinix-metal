@@ -14,7 +14,8 @@ import (
 
 func dataSourceMetalDevice() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceMetalDeviceRead,
+		Description: "This datasource can be used to read existing devices in Equinix Metal.",
+		Read:        dataSourceMetalDeviceRead,
 		Schema: map[string]*schema.Schema{
 			"hostname": {
 				Type:          schema.TypeString,

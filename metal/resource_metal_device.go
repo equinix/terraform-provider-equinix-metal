@@ -23,6 +23,7 @@ var ipAddressTypes = []string{"public_ipv4", "private_ipv4", "public_ipv6"}
 
 func resourceMetalDevice() *schema.Resource {
 	return &schema.Resource{
+		Description: "This resource can be used to create, modify, and delete devices in Equinix Metal.",
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(20 * time.Minute),
 			Update: schema.DefaultTimeout(20 * time.Minute),

@@ -23,25 +23,7 @@ It's a good idea to make a backup of the whole Terraform directory before doing 
 
 Considering we have infrastructure created from following template:
 
-```terraform
-terraform {
-  required_providers {
-    packet = {
-      source = "packethost/packet"
-    }
-  }
-}
-
-resource "packet_project" "example" {
-  name = "example"
-}
-
-resource "packet_vlan" "example" {
-  project_id       = packet_project.example.id
-  facility         = "sv15"
-  description      = "example"
-}
-```
+{{ tffile "examples/guides/migration_packet_1.tf" }}
 
 We can first change the provider in Terraform state file (`terraform.tfstate`) with `terraform state` subcommand `replace-provider`:
 
@@ -71,25 +53,7 @@ $ sed -i 's/packet_/metal_/g' terraform.tfstate
 
 The example template would now look as:
 
-```terraform
-terraform {
-  required_providers {
-    metal = {
-      source = "equinix/metal"
-    }
-  }
-}
-
-resource "metal_project" "example" {
-  name = "example"
-}
-
-resource "metal_vlan" "example" {
-  project_id       = metal_project.example.id
-  facility         = "sv15"
-  description      = "example"
-}
-```
+{{ tffile "examples/guides/migration_packet_2.tf" }}
 
 We then need to install the equinix/metal provider by running `$ terraform init`. After that, our templates should be in check with the Terraform state and with the upstream resources in Equinix Metal. You can verify the result by running `$ terraform plan`.
 
@@ -103,41 +67,7 @@ We can use `terraform state` and `terraform import` to achieve transition withou
 
 We assume to have infrastructure created with provider packethost/packet with a device and an IP reservation. The HCL looks like:
 
-```terraform
-terraform {
-  required_providers {
-    packet = {
-      source = "packethost/packet"
-      version = "3.2.1"
-    }
-  }
-}
-
-resource "packet_reserved_ip_block" "example" {
-  project_id = local.project_id
-  facility   = "sv15"
-  quantity   = 2
-}
-
-resource "packet_device" "example" {
-  project_id       = local.project_id
-  facilities       = ["sv15"]
-  plan             = "c3.medium.x86"
-  operating_system = "ubuntu_20_04"
-  hostname         = "test"
-  billing_cycle    = "hourly"
-
-  ip_address {
-    type            = "public_ipv4"
-    cidr            = 31
-    reservation_ids = [packet_reserved_ip_block.example.id]
-  }
-
-  ip_address {
-    type = "private_ipv4"
-  }
-}
-```
+{{ tffile "examples/guides/migration_packet_3.tf" }}
 
 ### Resource UUIDs
 
@@ -177,41 +107,7 @@ Once we find out the UUIDs of resources to migrate, in the HCL template, we need
 
 The modified template will then look as:
 
-```terraform
-terraform {
-  required_providers {
-    metal = {
-      source = "equinix/metal"
-      version = "2.0.1"
-    }
-  }
-}
-
-resource "metal_reserved_ip_block" "example" {
-  project_id = local.project_id
-  facility   = "sv15"
-  quantity   = 2
-}
-
-resource "metal_device" "example" {
-  project_id       = local.project_id
-  facilities       = ["sv15"]
-  plan             = "c3.medium.x86"
-  operating_system = "ubuntu_20_04"
-  hostname         = "test"
-  billing_cycle    = "hourly"
-
-  ip_address {
-    type            = "public_ipv4"
-    cidr            = 31
-    reservation_ids = [metal_reserved_ip_block.example.id]
-  }
-
-  ip_address {
-    type = "private_ipv4"
-  }
-}
-```
+{{ tffile "examples/guides/migration_packet_4.tf" }}
 
 ### Migrating Terraform state
 

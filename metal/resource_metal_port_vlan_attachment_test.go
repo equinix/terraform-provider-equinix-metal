@@ -21,10 +21,10 @@ resource "metal_project" "test" {
 resource "metal_device" "test" {
   hostname         = "tfacc-device-port-vlan-attachment-test"
   plan             = "s1.large.x86"
-  facilities       = ["nrt1"]
+  metro            = "da"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${metal_project.test.id}"
+  project_id       = metal_project.test.id
 }
 `, name)
 }
@@ -35,14 +35,14 @@ func testAccCheckMetalPortVlanAttachmentConfig_L2Bonded_2(name string) string {
 
 resource "metal_vlan" "test1" {
   description = "test VLAN 1"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_vlan" "test2" {
   description = "test VLAN 2"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_device_network_type" "test" {
@@ -52,13 +52,13 @@ resource "metal_device_network_type" "test" {
 
 resource "metal_port_vlan_attachment" "test1" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test1.vxlan}"
+  vlan_vnid = metal_vlan.test1.vxlan
   port_name = "bond0"
 }
 
 resource "metal_port_vlan_attachment" "test2" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test2.vxlan}"
+  vlan_vnid = metal_vlan.test2.vxlan
   port_name = "bond0"
 }
 
@@ -106,10 +106,10 @@ resource "metal_project" "test" {
 resource "metal_device" "test" {
   hostname         = "tfacc-vlan-l2i-test"
   plan             = "s1.large.x86"
-  facilities       = ["nrt1"]
+  metro            = "da"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${metal_project.test.id}"
+  project_id       = metal_project.test.id
 }
 `, name)
 }
@@ -120,14 +120,14 @@ func testAccCheckMetalPortVlanAttachmentConfig_L2Individual_2(name string) strin
 
 resource "metal_vlan" "test1" {
   description = "test VLAN 1"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_vlan" "test2" {
   description = "test VLAN 2"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_device_network_type" "test" {
@@ -137,13 +137,13 @@ resource "metal_device_network_type" "test" {
 
 resource "metal_port_vlan_attachment" "test1" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test1.vxlan}"
+  vlan_vnid = metal_vlan.test1.vxlan
   port_name = "eth1"
 }
 
 resource "metal_port_vlan_attachment" "test2" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test2.vxlan}"
+  vlan_vnid = metal_vlan.test2.vxlan
   port_name = "eth1"
 }
 
@@ -196,7 +196,7 @@ resource "metal_device" "test" {
   facilities       = ["dfw2"]
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${metal_project.test.id}"
+  project_id       = metal_project.test.id
 }`, name)
 }
 
@@ -212,12 +212,12 @@ resource "metal_device_network_type" "test" {
 resource "metal_vlan" "test" {
   description = "test vlan"
   facility    = "dfw2"
-  project_id  = "${metal_project.test.id}"
+  project_id  = metal_project.test.id
 }
 
 resource "metal_port_vlan_attachment" "test" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test.vxlan}"
+  vlan_vnid = metal_vlan.test.vxlan
   port_name = "eth1"
   force_bond = false
 }`, testAccCheckMetalPortVlanAttachmentConfig_Hybrid_1(name))
@@ -263,7 +263,7 @@ resource "metal_project" "test" {
 resource "metal_device" "test" {
   hostname         = "tfacc-device-hmv-test"
   plan             = "s1.large.x86"
-  facilities       = ["nrt1"]
+  metro            = "da"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
   project_id       = metal_project.test.id
@@ -277,7 +277,7 @@ func testAccCheckMetalPortVlanAttachmentConfig_HybridMultipleVlans_2(name string
 resource "metal_vlan" "test" {
   count       = 3
   description = "test VLAN"
-  facility    = "nrt1"
+  metro       = metal_device.test.metro
   project_id  = metal_project.test.id
 }
 
@@ -377,10 +377,10 @@ resource "metal_project" "test" {
 resource "metal_device" "test" {
   hostname         = "tfacc-device-l2n-test"
   plan             = "s1.large.x86"
-  facilities       = ["nrt1"]
+  metro            = "da"
   operating_system = "ubuntu_16_04"
   billing_cycle    = "hourly"
-  project_id       = "${metal_project.test.id}"
+  project_id       = metal_project.test.id
 }`, name)
 }
 
@@ -390,14 +390,14 @@ func testAccCheckMetalPortVlanAttachmentConfig_L2Native_2(name string) string {
 
 resource "metal_vlan" "test1" {
   description = "test VLAN 1"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_vlan" "test2" {
   description = "test VLAN 2"
-  facility    = "nrt1"
-  project_id  = "${metal_project.test.id}"
+  metro       = metal_device.test.metro
+  project_id  = metal_project.test.id
 }
 
 resource "metal_device_network_type" "test" {
@@ -407,13 +407,13 @@ resource "metal_device_network_type" "test" {
 
 resource "metal_port_vlan_attachment" "test1" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test1.vxlan}"
+  vlan_vnid = metal_vlan.test1.vxlan
   port_name = "eth1"
 }
 
 resource "metal_port_vlan_attachment" "test2" {
   device_id = metal_device_network_type.test.id
-  vlan_vnid = "${metal_vlan.test2.vxlan}"
+  vlan_vnid = metal_vlan.test2.vxlan
   native    = true
   port_name = "eth1"
   depends_on = ["metal_port_vlan_attachment.test1"]
